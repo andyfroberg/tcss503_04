@@ -43,7 +43,23 @@ class Adventurer:
         dagger: Wgt=4, V=60
         jewels: Wgt=2, V=190
         """
-        pass
+        overview = ''
+        coins = ''
+        inv = '== INVENTORY ==\n'
+        for item in self.inventory:
+            s = ''
+            s += item.name + ': '
+            s += "Wgt=" + item.weight + ', '
+            s += "V=" + item.value + '\n'
+            inv += s
+
+
+
+
+
+        s = f'=== ADVENTURER INVENTORY ===\n'
+        f'Adventurer (Total Carrying Capacity: {self.carry_weight})'
+        f'Current Carry Weight: '
 
 
 class Chest:
