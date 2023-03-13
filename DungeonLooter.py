@@ -276,7 +276,29 @@ class Game:
         #                       + chest.contents[i].value)
         # return a
 
-        # Attempt 3
+        # # Attempt 3
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        #
+        # a = [[0 for j in range(self.player.carry_weight + 1)] for i in
+        #      range(len(chest.contents))]
+        # for j in range(self.player.carry_weight):
+        #     if j >= weights[1]:
+        #         a[1][j] = values[1]
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(chest.contents)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - weights[i]]
+        #                       + values[i])
+
+        # Attempt 4
         chest = self.chests[0]
         weights = []
         values = []
@@ -284,20 +306,27 @@ class Game:
             weights.append(chest.contents[i].weight)
             values.append(chest.contents[i].value)
 
+        a = [[0 for j in range(self.player.carry_weight + 1)] for i in range(len(weights) + 1)]
+        # for j in range(self.player.carry_weight):
+        #     if j >= weights[1]:
+        #         a[1][j] = values[1]
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(chest.contents)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - weights[i]]
+        #                       + values[i])
 
-        a = [[0 for j in range(self.player.carry_weight + 1)] for i in
-             range(len(chest.contents))]
-        for j in range(self.player.carry_weight):
-            if j >= weights[1]:
-                a[1][j] = values[1]
-            else:
-                a[1][j] = 0
-        for i in range(2, len(chest.contents)):
-            for j in range(self.player.carry_weight):
-                a[i][j] = max(a[i - 1][j],
-                              a[i - 1][j - weights[i]]
-                              + values[i])
-        return values
+        for i in range(len(weights) + 1):
+            for j in range(self.player.carry_weight + 1):
+                if (i == 0) or (j == 0):
+                    a[i][j] = 0
+                elif weights[i] <= j:
+                    a[i][j] = max(values[i] + a[i-1][j-weights[i]], a[i-1][j])
+                else:
+                    a[i][j] = a[i-1][j]
+        return a
 
     def sell_items(self):
         """
