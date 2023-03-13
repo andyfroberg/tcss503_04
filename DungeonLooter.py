@@ -246,7 +246,51 @@ class Game:
 
         :return: None
         """
-        pass
+
+        # # Attempt 1
+        # for chest in self.chests:
+        #     a = [[0 for j in range(self.player.carry_weight + 1)] for i in range(len(chest.contents))]
+        #     for j in range(self.player.carry_weight):
+        #         if j > chest.contents[1].weight:
+        #             a[1][j] = chest.contents[1].value
+        #         else:
+        #             a[1][j] = 0
+        #     for i in range(2, len(chest.contents)):
+        #         for j in range(self.player.carry_weight):
+        #             a[i][j] = max(a[i-1][j], a[i-1][j - chest.contents[i].weight] + chest.contents[i].value)
+        #     return a
+
+        # # Attempt 2
+        # chest = self.chests[0]
+        # a = [[0 for j in range(self.player.carry_weight + 1)] for i in
+        #      range(len(chest.contents))]
+        # for j in range(self.player.carry_weight):
+        #     if j > chest.contents[1].weight:
+        #         a[1][j] = chest.contents[1].value
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(chest.contents)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - chest.contents[i].weight]
+        #                       + chest.contents[i].value)
+        # return a
+
+        # Attempt 3
+        chest = self.chests[0]
+        a = [[0 for j in range(self.player.carry_weight + 1)] for i in
+             range(len(chest.contents))]
+        for j in range(self.player.carry_weight):
+            if j > chest.contents[1].weight:
+                a[1][j] = chest.contents[1].value
+            else:
+                a[1][j] = 0
+        for i in range(2, len(chest.contents)):
+            for j in range(self.player.carry_weight):
+                a[i][j] = max(a[i - 1][j],
+                              a[i - 1][j - chest.contents[i].weight]
+                              + chest.contents[i].value)
+        return a
 
     def sell_items(self):
         """
@@ -311,7 +355,7 @@ if __name__ == "__main__":
     # ######## Don't touch above code - Kevin's code  ##############
 
     # CREATE A PLAYER WITH FINITE CARRY CAPACITY
-    player = Adventurer(carry_weight=100)
+    player = Adventurer(carry_weight=10)
     game = Game(player)
 
     # INDICATE THERE IS NO INVENTORY AND NO MONEY
@@ -319,7 +363,7 @@ if __name__ == "__main__":
 
     # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
     game.add_chest(Chest())
-    game.add_chest(Chest())
+    # game.add_chest(Chest())
 
     # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
     game.show_chests()
@@ -327,7 +371,7 @@ if __name__ == "__main__":
     # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
     # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
     # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    game.loot_chests()
+    print(str(game.loot_chests()))
 
     # game.show_chests()
     # game.show_player_inventory()
