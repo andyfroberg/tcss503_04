@@ -9,16 +9,8 @@ class Adventurer:
 
     def __init__(self, carry_weight):
         self.carry_weight = carry_weight
-        # Set coin purse denominations with zeros to match the formatting below
-        # (i.e., if the player has no coins of a given denomination, then the
-        # show_inventory() method will show a '0' next to the denomination
-        # instead of not showing the denomination in the list).
-        # Citation for pythonic dict init - https://linuxhint.com/initialize-dictionary-python/
-        self.coin_purse = dict(zip(Game.COINS.keys(), (0 for _ in Game.COINS.keys())))
+        self.coin_purse = {}
         self.inventory = []
-        self.current_carry_weight = 0
-        self.current_carry_value = 0
-        self.current_coin_purse_value = 0
 
     def show_inventory(self):
         """
@@ -51,22 +43,20 @@ class Adventurer:
         dagger: Wgt=4, V=60
         jewels: Wgt=2, V=190
         """
-        overview = f'=== ADVENTURER INVENTORY ===\n' \
-            + f'Adventurer (Total Carry Capacity: {self.carry_weight})\n' \
-            + f'Current Carry Weight: {self.current_carry_weight}\n' \
-            + f'Current Carry Value: {self.current_carry_value}\n' \
-            + f'Current Coin Purse Value: {self.current_coin_purse_value}\n'
+        overview = ''
+        coins = '== COINS ==\n'
 
-        coins = '\n== COINS ==\n'
-        for key, value in self.coin_purse.items():
-            coins += f'{Game.COINS[key]} ({key}): {value}\n'
-
-        inv = '\n== INVENTORY ==\n'
+        inv = '== INVENTORY ==\n'
         for item in self.inventory:
-            inv += f'{item.name}: Wgt={item.weight}, V={item.value}\n'
+            s = ''
+            s += item.name + ': '
+            s += "Wgt=" + item.weight + ', '
+            s += "V=" + item.value + '\n'
+            inv += s
 
-        s = overview + coins + inv
-        return s
+        s = f'=== ADVENTURER INVENTORY ===\n'
+        f'Adventurer (Total Carrying Capacity: {self.carry_weight})'
+        f'Current Carry Weight: '
 
 
 class Chest:
@@ -89,7 +79,7 @@ class Chest:
             tot_wgt += i.weight
             tot_val += i.value
             x += 1
-        return f"Chest: Item Count={x}, Total Value={tot_val}, Total Weight={tot_wgt}\n{ret_str}"
+        return f"Chest: Item Count={X}, Total Value={tot_val}, Total Weight={tot_wgt}\n{ret_str}"
 
     def remove(self, item):
         """
@@ -102,6 +92,7 @@ class Chest:
             return True
         except ValueError as e:
             return False
+
 
 class Item:
     """
@@ -226,11 +217,7 @@ class Game:
         clothing: Wgt=5, V=43
         dagger: Wgt=4, V=60
         """
-        for i, chest in enumerate(self.chests):
-            print(f'Chest {i}:\n= CONTENTS =')
-            for item in chest.contents:
-                print(f'{str(item)}')
-            print(f'')
+        pass
 
     def loot_chests(self):
         """
@@ -261,55 +248,10 @@ class Game:
 
         :return: None
         """
-        # Player can always be paid in full due to game's infinite bank
-        # and coin denomination of 1 (assuming whole-number values for items).
-        # Citation: Kevin's slides on Greedy Algorithms - slide 23
-        coins = []
-        for denom in sorted(Game.COINS.keys(), reverse=True):
-            while sum(coins) + denom <= self.player.current_carry_value:
-                coins.append(denom)
-        # End citation: Kevin's slides on Greedy Algorithms - slide 23
-
-        # Add coins to player's coin purse
-        for coin in coins:
-            self.player.coin_purse[coin] += 1
-
-        self.player.current_coin_purse_value += self.player.current_carry_value
-
-        # Clear player's inventory
-        self.player.inventory = []
+        pass
 
 
 if __name__ == "__main__":
-    # ######## Don't touch below - Kevin's code  ##############
-    # # CREATE A PLAYER WITH FINITE CARRY CAPACITY
-    # player = Adventurer(carry_weight=100)
-    # game = Game(player)
-    #
-    # # INDICATE THERE IS NO INVENTORY AND NO MONEY
-    # game.show_player_inventory()
-    #
-    # # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
-    # game.add_chest(Chest())
-    #
-    # # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
-    # game.show_chests()
-    #
-    # # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
-    # # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
-    # # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    # game.loot_chests()
-    #
-    # game.show_chests()
-    # game.show_player_inventory()
-    #
-    # # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
-    # # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
-    # game.sell_items()
-    #
-    # game.show_player_inventory()
-    # ######## Don't touch above code - Kevin's code  ##############
-
     # CREATE A PLAYER WITH FINITE CARRY CAPACITY
     player = Adventurer(carry_weight=100)
     game = Game(player)
@@ -318,7 +260,6 @@ if __name__ == "__main__":
     game.show_player_inventory()
 
     # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
-    game.add_chest(Chest())
     game.add_chest(Chest())
 
     # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
@@ -329,19 +270,16 @@ if __name__ == "__main__":
     # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
     game.loot_chests()
 
-    # game.show_chests()
-    # game.show_player_inventory()
+    game.show_chests()
+    game.show_player_inventory()
 
     # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
     # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
     game.sell_items()
 
-    # game.show_player_inventory()
+    game.show_player_inventory()
 
 
-    print(str(game.player.coin_purse))
-    print(str(game.player.coin_purse.keys()))
-    print(str(game.player.coin_purse.values()))
-    print(str(game.player.coin_purse.items()))
+
 
 
