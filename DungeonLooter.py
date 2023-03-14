@@ -13,7 +13,7 @@ class Adventurer:
         # (i.e., if the player has no coins of a given denomination, then the
         # show_inventory() method will show a '0' next to the denomination
         # instead of not showing the denomination in the list).
-        # Citation for pythonic dict init - https://linuxhint.com/initialize-dictionary-python/
+        # Citation for pythonic dict initialization - https://linuxhint.com/initialize-dictionary-python/
         self.coin_purse = dict(zip(Game.COINS.keys(), (0 for _ in Game.COINS.keys())))
         self.inventory = []
         self.current_carry_weight = 0
@@ -235,7 +235,7 @@ class Game:
                 print(f'{str(item)}')
             print(f'')
 
-    def loot_chests(self, reorganize_backpack=False):
+    def loot_chests(self):
         """
         For each chest in the game, determine the optimal content to remove [0-1] knapsack
         and add the item to the adventurers inventory.
@@ -249,16 +249,6 @@ class Game:
 
         :return: None
         """
-        # Attempt at looking for optimal set of items (regardless of how many
-        # chests the player loots in the game). Before doing knapsack
-        # algorithm, the player "empties" the current items from their
-        # backpack on the floor in front of them, then uses all the loot
-        # (i.e., the current chest and the previous contents of their
-        # backpack) to try to find the optimal set of items to use.
-        #
-        # reorganize_backpack=False should work as the original assignment
-        # outlined
-
         # Loop through game's chests
         for chest in self.chests:
             # Setup for 0-1 knapsack solution
@@ -284,11 +274,11 @@ class Game:
             for i in range(1, len(weights)):
                 for j in range(available_weight + 1):
                     if weights[i] <= j:
-                        with_item = a[i-1][j - weights[i]] + values[i]
+                        with_item = a[i - 1][j - weights[i]] + values[i]
                     else:
                         with_item = -1
 
-                    without_item = a[i-1][j]
+                    without_item = a[i - 1][j]
                     a[i][j] = max(without_item, with_item)
             ##### End citation #####
 
@@ -310,23 +300,13 @@ class Game:
                     curr_col = curr_col - weights[curr_row]
             ##### End citation #####
 
-            # return a, sum(weights), sum(values), curr_row, curr_col, item_indices
+            item_indices.reverse()
 
             # Add items to player's inv
             for idx in item_indices:
                 self.player.inventory.append(curr_chest.contents[idx])
                 self.player.current_carry_weight += curr_chest.contents[idx].weight
                 self.player.current_carry_value += curr_chest.contents[idx].value
-
-
-
-
-
-        return a, sum(weights), sum(values), curr_row, curr_col, item_indices
-
-
-    # Update global player variables (eg carry weight, carry val, etc.)
-
 
     def sell_items(self):
         """
@@ -364,35 +344,6 @@ class Game:
 
 
 if __name__ == "__main__":
-    # ######## Don't touch below - Kevin's code  ##############
-    # # CREATE A PLAYER WITH FINITE CARRY CAPACITY
-    # player = Adventurer(carry_weight=100)
-    # game = Game(player)
-    #
-    # # INDICATE THERE IS NO INVENTORY AND NO MONEY
-    # game.show_player_inventory()
-    #
-    # # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
-    # game.add_chest(Chest())
-    #
-    # # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
-    # game.show_chests()
-    #
-    # # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
-    # # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
-    # # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    # game.loot_chests()
-    #
-    # game.show_chests()
-    # game.show_player_inventory()
-    #
-    # # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
-    # # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
-    # game.sell_items()
-    #
-    # game.show_player_inventory()
-    # ######## Don't touch above code - Kevin's code  ##############
-
     # CREATE A PLAYER WITH FINITE CARRY CAPACITY
     player = Adventurer(carry_weight=100)
     game = Game(player)
@@ -402,11 +353,6 @@ if __name__ == "__main__":
 
     # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
     game.add_chest(Chest())
-    game.add_chest(Chest())
-    game.add_chest(Chest())
-    game.add_chest(Chest())
-    game.add_chest(Chest())
-    game.add_chest(Chest())
 
     # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
     game.show_chests()
@@ -414,34 +360,15 @@ if __name__ == "__main__":
     # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
     # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
     # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    a, weights, values, curr_row, curr_col, result = game.loot_chests()
-    for row in a:
-        print(str(row))
+    game.loot_chests()
 
-    print(f'sum of weights: {weights}')
-    print(f'sum of values: {values}')
-    print(f'curr_row: {curr_row}, curr_col: {curr_col}')
-    print(f'result: {str(result)}')
-
-    for item in game.player.inventory:
-        print(str(item))
-
-    print(f'player carry weight: {game.player.current_carry_weight}')
-    print(f'player carry value: {game.player.current_carry_value}')
-    print(f'player carry weight: {game.player.current_coin_purse_value}')
-
-    # game.show_chests()
-    # game.show_player_inventory()
+    game.show_chests()
+    game.show_player_inventory()
 
     # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
     # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
     game.sell_items()
 
-    # print(f'player carry weight: {game.player.current_carry_weight}')
-    # print(f'player carry value: {game.player.current_carry_value}')
-    # print(f'player carry weight: {game.player.current_coin_purse_value}')
-
     game.show_player_inventory()
-
 
 
