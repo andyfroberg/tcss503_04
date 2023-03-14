@@ -62,8 +62,11 @@ class Adventurer:
             coins += f'{Game.COINS[key]} ({key}): {value}\n'
 
         inv = '\n== INVENTORY ==\n'
-        for item in self.inventory:
-            inv += f'{item.name}: Wgt={item.weight}, V={item.value}\n'
+        if not self.inventory:
+            inv += 'Backpack is empty\n'
+        else:
+            for item in self.inventory:
+                inv += f'{item.name}: Wgt={item.weight}, V={item.value}\n'
 
         s = overview + coins + inv
         return s
@@ -248,61 +251,68 @@ class Game:
         """
         # INCLUDE dump_inv_and_recalc=False parameter for extra credit?
 
+        # Loop through game's chests
+        for chest in self.chests:
+            # Setup for 0-1 knapsack solution
+            curr_chest = chest
+            weights = []
+            values = []
+            for i in range(len(curr_chest.contents)):
+                weights.append(curr_chest.contents[i].weight)
+                values.append(curr_chest.contents[i].value)
 
-        # Setup for 0-1 knapsack solution
-        chest = self.chests[0]
-        weights = []
-        values = []
-        for i in range(len(chest.contents)):
-            weights.append(chest.contents[i].weight)
-            values.append(chest.contents[i].value)
+            available_weight = self.player.carry_weight - self.player.current_carry_weight
+            a = [[0 for _ in range(available_weight + 1)] for _ in range(len(weights))]
 
-        a = [[0 for _ in range(self.player.carry_weight + 1)] for _ in range(len(weights))]
-
-        # Knapsack algorithm
-        ##### Citation #####
-        # Basically taken directly from Kevin's 'Week 7 DP' Jupyter notebook
-        for j in range(self.player.carry_weight + 1):
-            if j >= weights[0]:
-                a[0][j] = values[0]
-            else:
-                a[0][j] = 0
-
-        for i in range(1, len(weights)):
-            for j in range(self.player.carry_weight + 1):
-                if weights[i] <= j:
-                    with_item = a[i-1][j - weights[i]] + values[i]
+            # Knapsack algorithm
+            ##### Citation #####
+            # Basically taken directly from Kevin's 'Week 7 DP' Jupyter notebook
+            for j in range(available_weight + 1):
+                if j >= weights[0]:
+                    a[0][j] = values[0]
                 else:
-                    with_item = -1
+                    a[0][j] = 0
 
-                without_item = a[i-1][j]
-                a[i][j] = max(without_item, with_item)
-        ##### End citation #####
+            for i in range(1, len(weights)):
+                for j in range(available_weight + 1):
+                    if weights[i] <= j:
+                        with_item = a[i-1][j - weights[i]] + values[i]
+                    else:
+                        with_item = -1
 
-        # Recovery
-        ##### Citation #####
-        # More or less copy pasta from Kevin's Week 8 slides on knapsack recovery
-        curr_row = len(a) - 1
-        curr_col = len(a[0]) - 1
+                    without_item = a[i-1][j]
+                    a[i][j] = max(without_item, with_item)
+            ##### End citation #####
 
-        item_indices = []
+            # Recovery
+            ##### Citation #####
+            # More or less copy pasta from Kevin's Week 8 slides on knapsack recovery
+            curr_row = len(a) - 1
+            curr_col = len(a[0]) - 1
 
-        curr_val = a[curr_row][curr_col]
-        while curr_val > 0:
-            if curr_val == a[curr_row - 1][curr_col]:
-                curr_row -= 1
-            else:
-                item_indices.append(curr_row)
-                curr_val = curr_val - values[curr_row]
-                curr_col = curr_col - weights[curr_row]
-        ##### End citation #####
+            item_indices = []
+
+            curr_val = a[curr_row][curr_col]
+            while curr_val > 0:
+                if curr_val == a[curr_row - 1][curr_col]:
+                    curr_row -= 1
+                else:
+                    item_indices.append(curr_row)
+                    curr_val = curr_val - values[curr_row]
+                    curr_col = curr_col - weights[curr_row]
+            ##### End citation #####
+
+            # return a, sum(weights), sum(values), curr_row, curr_col, item_indices
+
+            # Add items to player's inv
+            for idx in item_indices:
+                self.player.inventory.append(curr_chest.contents[idx])
+                self.player.current_carry_weight += curr_chest.contents[idx].weight
+                self.player.current_carry_value += curr_chest.contents[idx].value
 
 
-        # return a, sum(weights), sum(values), curr_row, curr_col, item_indices
 
-        # Add items to player's inv
-        for idx in item_indices:
-            self.player.inventory.append(chest.contents[idx])
+
 
         return a, sum(weights), sum(values), curr_row, curr_col, item_indices
 
@@ -340,6 +350,9 @@ class Game:
 
         # Clear player's inventory
         self.player.inventory = []
+
+        # Backpack is empty -> reset available carry value
+        self.player.current_carry_weight = 0
 
 
 if __name__ == "__main__":
@@ -381,7 +394,11 @@ if __name__ == "__main__":
 
     # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
     game.add_chest(Chest())
-    # game.add_chest(Chest())
+    game.add_chest(Chest())
+    game.add_chest(Chest())
+    game.add_chest(Chest())
+    game.add_chest(Chest())
+    game.add_chest(Chest())
 
     # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
     game.show_chests()
@@ -396,11 +413,14 @@ if __name__ == "__main__":
     print(f'sum of weights: {weights}')
     print(f'sum of values: {values}')
     print(f'curr_row: {curr_row}, curr_col: {curr_col}')
-    print(str(a[9][100]))
     print(f'result: {str(result)}')
 
     for item in game.player.inventory:
         print(str(item))
+
+    print(f'player carry weight: {game.player.current_carry_weight}')
+    print(f'player carry value: {game.player.current_carry_value}')
+    print(f'player carry weight: {game.player.current_coin_purse_value}')
 
     # game.show_chests()
     # game.show_player_inventory()
@@ -409,7 +429,11 @@ if __name__ == "__main__":
     # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
     game.sell_items()
 
-    # game.show_player_inventory()
+    # print(f'player carry weight: {game.player.current_carry_weight}')
+    # print(f'player carry value: {game.player.current_carry_value}')
+    # print(f'player carry weight: {game.player.current_coin_purse_value}')
+
+    game.show_player_inventory()
 
 
 
