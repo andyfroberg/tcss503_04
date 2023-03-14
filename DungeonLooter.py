@@ -235,7 +235,7 @@ class Game:
                 print(f'{str(item)}')
             print(f'')
 
-    def loot_chests(self):
+    def loot_chests(self, reorganize_backpack=False):
         """
         For each chest in the game, determine the optimal content to remove [0-1] knapsack
         and add the item to the adventurers inventory.
@@ -249,7 +249,15 @@ class Game:
 
         :return: None
         """
-        # INCLUDE dump_inv_and_recalc=False parameter for extra credit?
+        # Attempt at looking for optimal set of items (regardless of how many
+        # chests the player loots in the game). Before doing knapsack
+        # algorithm, the player "empties" the current items from their
+        # backpack on the floor in front of them, then uses all the loot
+        # (i.e., the current chest and the previous contents of their
+        # backpack) to try to find the optimal set of items to use.
+        #
+        # reorganize_backpack=False should work as the original assignment
+        # outlined
 
         # Loop through game's chests
         for chest in self.chests:
