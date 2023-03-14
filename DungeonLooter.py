@@ -246,6 +246,12 @@ class Game:
 
         :return: None
         """
+        # INCLUDE dump_inv_and_recalc=False parameter for extra credit?
+
+        # Add items to player's inv
+
+        # Update global player variables (eg carry weight, carry val, etc.)
+
 
         # # Attempt 1
         # for chest in self.chests:
@@ -298,7 +304,193 @@ class Game:
         #                       a[i - 1][j - weights[i]]
         #                       + values[i])
 
-        # Attempt 4
+        # # Attempt 4
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[-1 for j in range(self.player.carry_weight + 1)] for i in range(len(weights))]
+        # for i in range(len(weights) + 1):
+        #     for j in range(self.player.carry_weight + 1):
+        #         if (i == 0) or (j == 0):
+        #             a[i][j] = 0
+        #         elif weights[i] <= j:
+        #             a[i][j] = max(values[i] + a[i-1][j-weights[i]], a[i-1][j])
+        #         else:
+        #             a[i][j] = a[i-1][j]
+        # return a
+
+        # # Attempt 5
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[-1 for j in range(1, self.player.carry_weight + 1)] for i in range(len(weights))]
+        # for j in range(self.player.carry_weight):
+        #     if j <= weights[1]:
+        #         a[1][j] = values[1]
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(weights)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - weights[i]]
+        #                       + values[i])
+        #
+        # # for i in range(len(weights) + 1):
+        # #     for j in range(self.player.carry_weight + 1):
+        # #         if (i == 0) or (j == 0):
+        # #             a[i][j] = 0
+        # #         elif weights[i] <= j:
+        # #             a[i][j] = max(values[i] + a[i - 1][j - weights[i]],
+        # #                           a[i - 1][j])
+        # #         else:
+        # #             a[i][j] = a[i - 1][j]
+        # return a, sum(weights), sum(values)
+
+        # # Attempt 6
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[-1 for j in range(1, self.player.carry_weight + 1)] for i in
+        #      range(len(weights))]
+        # for j in range(self.player.carry_weight):
+        #     if j >= weights[1]:
+        #         a[1][j] = values[1]
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(weights)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - weights[i]]
+        #                       + values[i])
+        #
+        # return a, sum(weights), sum(values)
+
+        # # Attempt 7
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[-1 for j in range(1, self.player.carry_weight + 1)] for i in range(len(weights) + 1)]
+        # for j in range(self.player.carry_weight):
+        #     if j >= weights[1]:
+        #         a[1][j] = values[1]
+        #     else:
+        #         a[1][j] = 0
+        # for i in range(2, len(weights)):
+        #     for j in range(self.player.carry_weight):
+        #         a[i][j] = max(a[i - 1][j],
+        #                       a[i - 1][j - weights[i]]
+        #                       + values[i])
+        #
+        # return a, sum(weights), sum(values)
+
+        # Attempt 8
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[0 for j in range(self.player.carry_weight + 1)] for i in range(len(weights) + 1)]
+        # for i in range(len(weights) + 1):
+        #     for j in range(self.player.carry_weight + 1):
+        #         if i == 0 or j == 0:
+        #             a[i][j] = 0
+        #         elif weights[i-1] <= j:
+        #             a[i][j] = max(a[i-1][j], values[i-1] + a[i-1][j - weights[i-1]])
+        #         else:
+        #             a[i][j] = a[i-1][j]
+
+        # return a, sum(weights), sum(values)
+
+        # # Attempt 9
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[0 for j in range(self.player.carry_weight + 1)] for i in
+        #      range(len(weights) + 1)]
+        # for i in range(len(weights) + 1):
+        #     for j in range(self.player.carry_weight + 1):
+        #         if i == 0 or j == 0:
+        #             a[i][j] = 0
+        #         elif weights[i - 1] <= j:
+        #             a[i][j] = max(a[i - 1][j],
+        #                           values[i - 1] + a[i - 1][j - weights[i - 1]])
+        #         else:
+        #             a[i][j] = a[i - 1][j]
+        #
+        # return a, sum(weights), sum(values)
+
+        # # Attempt 10
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[-1 for _ in range(self.player.carry_weight + 1)] for _ in range(len(weights) + 1)]
+        # for i in range(len(weights) + 1):
+        #     for j in range(self.player.carry_weight + 1):
+        #         if i == 0 or j == 0:
+        #             a[i][j] = 0
+        #         elif weights[i - 1] <= j:
+        #             a[i][j] = max(a[i - 1][j],
+        #                           values[i - 1] + a[i - 1][j - weights[i - 1]])
+        #         else:
+        #             a[i][j] = a[i - 1][j]
+        #
+        # return a, sum(weights), sum(values)
+
+        # # Attempt 12
+        # chest = self.chests[0]
+        # weights = []
+        # values = []
+        # for i in range(len(chest.contents)):
+        #     weights.append(chest.contents[i].weight)
+        #     values.append(chest.contents[i].value)
+        #
+        # a = [[0 for _ in range(self.player.carry_weight + 1)] for _ in range(len(weights) + 1)]
+        #
+        # for j in range(self.player.carry_weight + 1):
+        #     if j >= weights[0]:
+        #         a[0][j] = values[0]
+        #     else:
+        #         a[0][j] = 0
+        #
+        # for i in range(1, len(weights) + 1):
+        #     for j in range(self.player.carry_weight + 1):
+        #         a[i][j] = max(a[i - 1][j], values[i - 1] + a[i - 1][j - weights[i - 1]])
+        #         # if i == 0 or j == 0:
+        #         #     a[i][j] = 0
+        #         # elif weights[i - 1] <= j:
+        #         #     a[i][j] = max(a[i - 1][j], values[i - 1] + a[i - 1][j - weights[i - 1]])
+        #         # else:
+        #         #     a[i][j] = a[i - 1][j]
+        #
+        # return a, sum(weights), sum(values)
+
+        # Attempt 12
         chest = self.chests[0]
         weights = []
         values = []
@@ -306,27 +498,29 @@ class Game:
             weights.append(chest.contents[i].weight)
             values.append(chest.contents[i].value)
 
-        a = [[0 for j in range(self.player.carry_weight + 1)] for i in range(len(weights) + 1)]
-        # for j in range(self.player.carry_weight):
-        #     if j >= weights[1]:
-        #         a[1][j] = values[1]
-        #     else:
-        #         a[1][j] = 0
-        # for i in range(2, len(chest.contents)):
-        #     for j in range(self.player.carry_weight):
-        #         a[i][j] = max(a[i - 1][j],
-        #                       a[i - 1][j - weights[i]]
-        #                       + values[i])
+        a = [[0 for _ in range(self.player.carry_weight)] for _ in range(len(weights) + 1)]
 
-        for i in range(len(weights) + 1):
+        for j in range(self.player.carry_weight + 1):
+            if j >= weights[0]:
+                a[0][j] = values[0]
+            else:
+                a[0][j] = 0
+
+        for i in range(1, len(weights) + 1):
             for j in range(self.player.carry_weight + 1):
-                if (i == 0) or (j == 0):
-                    a[i][j] = 0
-                elif weights[i] <= j:
-                    a[i][j] = max(values[i] + a[i-1][j-weights[i]], a[i-1][j])
-                else:
-                    a[i][j] = a[i-1][j]
-        return a
+                a[i][j] = max(a[i - 1][j],
+                              values[i - 1] + a[i - 1][j - weights[i - 1]])
+                # if i == 0 or j == 0:
+                #     a[i][j] = 0
+                # elif weights[i - 1] <= j:
+                #     a[i][j] = max(a[i - 1][j], values[i - 1] + a[i - 1][j - weights[i - 1]])
+                # else:
+                #     a[i][j] = a[i - 1][j]
+
+        return a, sum(weights), sum(values)
+
+
+
 
     def sell_items(self):
         """
@@ -391,7 +585,7 @@ if __name__ == "__main__":
     # ######## Don't touch above code - Kevin's code  ##############
 
     # CREATE A PLAYER WITH FINITE CARRY CAPACITY
-    player = Adventurer(carry_weight=10)
+    player = Adventurer(carry_weight=100)
     game = Game(player)
 
     # INDICATE THERE IS NO INVENTORY AND NO MONEY
@@ -407,7 +601,12 @@ if __name__ == "__main__":
     # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
     # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
     # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    print(str(game.loot_chests()))
+    a, weights, values = game.loot_chests()
+    for row in a:
+        print(str(row))
+
+    print(f'sum of weights: {weights}')
+    print(f'sum of values: {values}')
 
     # game.show_chests()
     # game.show_player_inventory()
@@ -418,10 +617,5 @@ if __name__ == "__main__":
 
     # game.show_player_inventory()
 
-
-    print(str(game.player.coin_purse))
-    print(str(game.player.coin_purse.keys()))
-    print(str(game.player.coin_purse.values()))
-    print(str(game.player.coin_purse.items()))
 
 
