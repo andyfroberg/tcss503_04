@@ -13,11 +13,8 @@ class Adventurer:
         # (i.e., if the player has no coins of a given denomination, then the
         # show_inventory() method will show a '0' next to the denomination
         # instead of not showing the denomination in the list).
-        ##### Citation for fancy pythonic dict initialization
-        ##### https://linuxhint.com/initialize-dictionary-python/
+        # Citation for pythonic dict initialization - https://linuxhint.com/initialize-dictionary-python/
         self.coin_purse = dict(zip(Game.COINS.keys(), (0 for _ in Game.COINS.keys())))
-        ### End citation
-
         self.inventory = []
         self.current_carry_weight = 0
         self.current_carry_value = 0
@@ -304,19 +301,14 @@ class Game:
             ##### End citation #####
 
             item_indices.reverse()
-            items_to_remove = []
-            # Add items to player's inv and grab items to remove from chest.
+
+            # Add items to player's inv
             for idx in item_indices:
                 self.player.inventory.append(curr_chest.contents[idx])
                 self.player.current_carry_weight += curr_chest.contents[idx].weight
                 self.player.current_carry_value += curr_chest.contents[idx].value
-                items_to_remove.append(curr_chest.contents[idx])
 
-            # Remove the looted items from the current chest. (They are now
-            # in the player's backpack and therefore no longer in the chest.)
-            if items_to_remove:
-                for item in items_to_remove:
-                    chest.contents.remove(item)
+        return a, weights, values, a[-1][-1]
 
     def sell_items(self):
         """
@@ -349,11 +341,39 @@ class Game:
         # Clear player's inventory
         self.player.inventory = []
 
-        # Backpack is empty -> reset available carry weight
+        # Backpack is empty -> reset available carry value
         self.player.current_carry_weight = 0
 
 
 if __name__ == "__main__":
+    # # CREATE A PLAYER WITH FINITE CARRY CAPACITY
+    # player = Adventurer(carry_weight=100)
+    # game = Game(player)
+    #
+    # # INDICATE THERE IS NO INVENTORY AND NO MONEY
+    # game.show_player_inventory()
+    #
+    # # CREATE CHESTS WITH RANDOM CONTENT AND ADD IT TO THE GAME
+    # game.add_chest(Chest())
+    #
+    # # SHOW THE CONTENT OF ANY CHESTS IN THE GAME
+    # game.show_chests()
+    #
+    # # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
+    # # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
+    # # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
+    # game.loot_chests()
+    #
+    # game.show_chests()
+    # game.show_player_inventory()
+    #
+    # # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
+    # # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
+    # game.sell_items()
+    #
+    # game.show_player_inventory()
+
+##### Andy's informal tests #####
     # CREATE A PLAYER WITH FINITE CARRY CAPACITY
     player = Adventurer(carry_weight=100)
     game = Game(player)
@@ -370,14 +390,30 @@ if __name__ == "__main__":
     # THE GAME SHOULD HAVE A METHOD THAT WILL OPTIMALLY LOOT THE ITEMS
     # IN THE CHEST [0-1 KNAPSACK] AND ADD IT TO THE PLAYER'S INVENTORY
     # ANY ITEMS NO IN THE CHEST SHOULD REMAIN
-    game.loot_chests()
+    a, weights, values, high = game.loot_chests()
+    for row in a:
+        print(str(row))
 
-    game.show_chests()
-    game.show_player_inventory()
+    print(f'sum of weights: {weights}')
+    print(f'sum of values: {values}')
+    print(f'result: {str(high)}')
+
+    for item in game.player.inventory:
+        print(str(item))
+
+    print(f'player carry weight: {game.player.current_carry_weight}')
+    print(f'player carry value: {game.player.current_carry_value}')
+    print(f'player carry weight: {game.player.current_coin_purse_value}')
+
+    # game.show_chests()
+    # game.show_player_inventory()
 
     # THE CAME SHOULD HAVE A METHOD TO TAKE INVENTORY FROM THE PLAYER
     # CONVERT IT INTO PROPER DENOMINATIONS, AND PLACE THAT DATA INTO THE COIN PURSE
     game.sell_items()
 
-    game.show_player_inventory()
+    # print(f'player carry weight: {game.player.current_carry_weight}')
+    # print(f'player carry value: {game.player.current_carry_value}')
+    # print(f'player carry weight: {game.player.current_coin_purse_value}')
 
+    game.show_player_inventory()
